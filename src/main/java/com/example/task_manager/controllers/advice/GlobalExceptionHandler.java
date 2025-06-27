@@ -1,10 +1,7 @@
 package com.example.task_manager.controllers.advice;
 
 import com.example.task_manager.dtos.response.exception.ExceptionResponseDto;
-import com.example.task_manager.exceptions.GeneralException;
-import com.example.task_manager.exceptions.ResourceAlreadyExistsException;
-import com.example.task_manager.exceptions.ResourceNotFoundException;
-import com.example.task_manager.exceptions.UserIsNotTeamMemberException;
+import com.example.task_manager.exceptions.*;
 import com.example.task_manager.utils.DateTimeUTC;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +26,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserIsNotTeamMemberException.class)
     public ResponseEntity<?> handleUserIsNotTeamMemberException(UserIsNotTeamMemberException e) {
         return createResponse(HttpStatus.FORBIDDEN, e);
+    }
+
+    @ExceptionHandler(ResourceDeletionNotAllowedException.class)
+    public ResponseEntity<?> handleResourceDeletionNotAllowedException(ResourceDeletionNotAllowedException e) {
+        return createResponse(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -6,6 +6,7 @@ import com.example.task_manager.dtos.request.user.UserRequestDto;
 import com.example.task_manager.dtos.response.user.UserResponseDto;
 import com.example.task_manager.entities.User;
 import com.example.task_manager.exceptions.ResourceAlreadyExistsException;
+import com.example.task_manager.exceptions.ResourceDeletionNotAllowedException;
 import com.example.task_manager.exceptions.ResourceNotFoundException;
 import com.example.task_manager.exceptions.UserPasswordMismatchException;
 import com.example.task_manager.mappers.UserMapper;
@@ -17,6 +18,9 @@ import com.example.task_manager.utils.DateTimeUTC;
 import com.example.task_manager.utils.PasswordUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -97,6 +101,16 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void delete(String id) {
         assertUserExistsById(id);
+
+        if (teamService.getTeamsByUserId(id)
+                .stream()
+                .anyMatch(team -> Objects.equals(team.getOwnerId(), id))
+        ) {
+            throw new ResourceDeletionNotAllowedException(
+                    "User with id=" + id + " cannot be deleted due to ownership of other resources",
+                    DateTimeUTC.now()
+            );
+        }
 
         taskService.deleteUserTasksByUserId(id);
         taskService.unassignUserById(id);
