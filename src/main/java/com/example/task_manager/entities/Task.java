@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -27,8 +26,7 @@ public class Task {
     private TaskType type;
     private TaskPriority priority;
     private TaskStatus status;
-    @DBRef
-    private List<User> assignedUsers;
+    private List<String> assignedUsersId;
     private String teamId;
     private Date start;
     private Date end;

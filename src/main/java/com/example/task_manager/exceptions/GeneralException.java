@@ -1,17 +1,16 @@
 package com.example.task_manager.exceptions;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 
 @Getter
 public class GeneralException extends RuntimeException {
-    private final Date date;
+    private final Date dateTime;
 
-    public GeneralException(String message, Date date) {
+    public GeneralException(String message, Date dateTime) {
         super(message);
-        this.date = date;
+        this.dateTime = dateTime;
     }
 
 }

@@ -1,9 +1,10 @@
 package com.example.task_manager.controllers;
 
-import com.example.task_manager.dtos.request.user.UserLoginRequestDto;
+import com.example.task_manager.dtos.request.user.LoginUserDto;
 import com.example.task_manager.dtos.request.user.UserRequestDto;
 import com.example.task_manager.dtos.response.user.UserResponseDto;
 import com.example.task_manager.services.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +22,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginRequestDto dto) {
+    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginUserDto dto) {
         userService.login(dto);
         return ResponseEntity.status(HttpStatus.OK).body("Login successful");
     }

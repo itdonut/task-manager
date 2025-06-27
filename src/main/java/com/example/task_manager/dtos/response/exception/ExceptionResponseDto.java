@@ -13,5 +13,5 @@ import java.util.Date;
 @AllArgsConstructor
 public class ExceptionResponseDto {
     private String message;
-    private Date date;
+    private Date dateTime;
 }

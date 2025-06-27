@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,6 +20,7 @@ public class Team {
     private String id;
     private String name;
     private String ownerId;
+    private List<String> membersId;
     private Date createdAt;
     private Date modifiedAt;
 }

@@ -1,7 +1,7 @@
 package com.example.task_manager.services.impl;
 
-import com.example.task_manager.dtos.request.user.UpdateUserPasswordRequestDto;
-import com.example.task_manager.dtos.request.user.UserLoginRequestDto;
+import com.example.task_manager.dtos.request.user.UpdateUserPasswordDto;
+import com.example.task_manager.dtos.request.user.LoginUserDto;
 import com.example.task_manager.dtos.request.user.UserRequestDto;
 import com.example.task_manager.dtos.response.user.UserResponseDto;
 import com.example.task_manager.entities.User;
@@ -10,25 +10,48 @@ import com.example.task_manager.exceptions.ResourceNotFoundException;
 import com.example.task_manager.exceptions.UserPasswordMismatchException;
 import com.example.task_manager.mappers.UserMapper;
 import com.example.task_manager.repositories.UserRepository;
+import com.example.task_manager.services.ITaskService;
+import com.example.task_manager.services.ITeamService;
 import com.example.task_manager.services.IUserService;
 import com.example.task_manager.utils.DateTimeUTC;
 import com.example.task_manager.utils.PasswordUtil;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
+    private final ITaskService taskService;
+    private final ITeamService teamService;
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, @Lazy ITaskService taskService, @Lazy ITeamService teamService, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.taskService = taskService;
+        this.teamService = teamService;
         this.userMapper = userMapper;
+    }
+
+    @Override
+    public boolean isUserPresentById(String id) {
+        return userRepository.existsById(id);
+    }
+
+    @Override
+    public UserResponseDto getUserById(String id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "User with id=" + id + " doesn't exist",
+                        DateTimeUTC.now()
+                )
+        );
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserResponseDto create(UserRequestDto dto) {
         String username = dto.getUsername();
-        if (userRepository.getUserByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new ResourceAlreadyExistsException(
                     "User with username=" + username + " already exists",
                     DateTimeUTC.now()
@@ -44,9 +67,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserResponseDto update(String id, UserRequestDto dto) {
-        User user = userRepository.getUserById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User with id=" + id + " doesn't exist", DateTimeUTC.now())
-        );
+        User user = this.getUserEntityById(id);
 
         User updatedUser = userMapper.toEntity(dto);
         updatedUser.setId(id);
@@ -58,13 +79,14 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void updatePassword(String id, UpdateUserPasswordRequestDto dto) {
-        User user = userRepository.getUserById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User with id=" + id + " doesn't exist", DateTimeUTC.now())
-        );
+    public void updatePassword(String id, UpdateUserPasswordDto dto) {
+        User user = this.getUserEntityById(id);
 
         if (!PasswordUtil.verifyPassword(dto.getOldPassword(), user.getPassword())) {
-            throw new UserPasswordMismatchException("Password does not match the one stored", DateTimeUTC.now());
+            throw new UserPasswordMismatchException(
+                    "Password does not match the one stored",
+                    DateTimeUTC.now()
+            );
         }
 
         user.setPassword(PasswordUtil.hashPassword(dto.getNewPassword()));
@@ -74,13 +96,35 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void delete(String id) {
-        if (userRepository.getUserById(id).isEmpty())
-            throw new ResourceNotFoundException("User with id=" + id + " doesn't exist", DateTimeUTC.now());
+        assertUserExistsById(id);
+
+        taskService.deleteUserTasksByUserId(id);
+        taskService.unassignUserById(id);
+        teamService.deleteUserFromAllTeamsById(id);
         userRepository.deleteById(id);
     }
 
     @Override
-    public void login(UserLoginRequestDto dto) {
+    public void login(LoginUserDto dto) {
 
+    }
+
+    @Override
+    public void assertUserExistsById(String id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException(
+                    "User with id=" + id + " doesn't exist",
+                    DateTimeUTC.now()
+            );
+        }
+    }
+
+    private User getUserEntityById(String id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "User with id=" + id + " doesn't exist",
+                        DateTimeUTC.now()
+                )
+        );
     }
 }
