@@ -4,8 +4,7 @@ import com.example.task_manager.dtos.response.exception.ExceptionResponseDto;
 import com.example.task_manager.exceptions.*;
 import com.example.task_manager.utils.DateTimeUTC;
 import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,108 +21,107 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<?> handleResourceAlreadyExistsException(ResourceAlreadyExistsException e) {
-        logger.error("Resource already exists", e);
+        log.error("[ExceptionHandler] Resource already exists: {}", e.getMessage());
         return createResponse(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
-        logger.error("Resource is not found", e);
+        log.error("[ExceptionHandler] Resource is not found: {}", e.getMessage());
         return createResponse(HttpStatus.NOT_FOUND, e);
     }
 
     @ExceptionHandler(UserIsNotTeamMemberException.class)
     public ResponseEntity<?> handleUserIsNotTeamMemberException(UserIsNotTeamMemberException e) {
-        logger.error("User is not a member of team", e);
+        log.error("[ExceptionHandler] User is not a member of team: {}", e.getMessage());
         return createResponse(HttpStatus.FORBIDDEN, e);
     }
 
     @ExceptionHandler(ResourceDeletionNotAllowedException.class)
     public ResponseEntity<?> handleResourceDeletionNotAllowedException(ResourceDeletionNotAllowedException e) {
-        logger.error("Resource deletion is not allowed", e);
+        log.error("[ExceptionHandler] Resource deletion is not allowed: {}", e.getMessage());
         return createResponse(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        logger.error("Request method not supported", e);
+        log.error("[ExceptionHandler] Request method not supported: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.METHOD_NOT_ALLOWED, "Request method not supported");
     }
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        logger.error("Required request parameter is missing", e);
+        log.error("[ExceptionHandler] Required request parameter is missing: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Required request parameter is missing");
     }
 
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatchException(TypeMismatchException e) {
-        logger.error("Invalid parameter type", e);
+        log.error("[ExceptionHandler] Invalid parameter type: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Invalid parameter type");
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException e) {
-        logger.error("No static resource", e);
+        log.error("[ExceptionHandler] No static resource: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.NOT_FOUND, "No static resource");
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<?> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
-        logger.error("Unsupported content type", e);
+        log.error("[ExceptionHandler] Unsupported content type: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported content type");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleHttpMediaTypeNotSupportedException(NoHandlerFoundException e) {
-        logger.error("Path not found", e);
+        log.error("[ExceptionHandler] Path not found: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.NOT_FOUND, "Path not found");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        logger.error("Access denied", e);
+        log.error("[ExceptionHandler] Access denied: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.FORBIDDEN, "Access denied");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        logger.error("Invalid method argument type", e);
+        log.error("[ExceptionHandler] Invalid method argument type: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Invalid method argument type");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidBody(MethodArgumentNotValidException e) {
-        logger.error("Invalid request body", e);
+        log.error("[ExceptionHandler] Invalid request body: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Validation failed due to invalid request body");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleInvalidParam(ConstraintViolationException e) {
-        logger.error("Invalid request param", e);
+        log.error("[ExceptionHandler] Invalid request param: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Validation failed due to invalid request param");
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<?> handleBindException(BindException e) {
-        logger.error("Binding error", e);
+        log.error("[ExceptionHandler] Binding error: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Validation failed due to binding error");
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        logger.error("Invalid JSON", e);
+        log.error("[ExceptionHandler] Invalid JSON: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Unable to parse request body. Please check the JSON syntax and data types");
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUniversalException(Exception e) {
-        logger.error("Internal server error", e);
+        log.error("[ExceptionHandler] Internal server error: {}", e.getMessage());
         return createGeneralResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
