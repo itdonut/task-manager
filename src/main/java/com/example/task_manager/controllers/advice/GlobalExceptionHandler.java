@@ -95,6 +95,11 @@ public class GlobalExceptionHandler {
         return createGeneralResponse(HttpStatus.BAD_REQUEST, "Unable to parse request body. Please check the JSON syntax and data types");
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleUniversalException(Exception e) {
+        return createGeneralResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    }
+
     private ResponseEntity<ExceptionResponseDto> createResponse(HttpStatus status, GeneralException e) {
         return ResponseEntity.status(status).body(
                 ExceptionResponseDto.builder()
