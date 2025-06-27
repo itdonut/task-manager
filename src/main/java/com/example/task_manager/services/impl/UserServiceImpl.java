@@ -1,5 +1,6 @@
 package com.example.task_manager.services.impl;
 
+import com.example.task_manager.dtos.request.user.RegisterUserDto;
 import com.example.task_manager.dtos.request.user.UpdateUserPasswordDto;
 import com.example.task_manager.dtos.request.user.LoginUserDto;
 import com.example.task_manager.dtos.request.user.UserRequestDto;
@@ -20,7 +21,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -53,7 +53,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserResponseDto create(UserRequestDto dto) {
+    public UserResponseDto register(RegisterUserDto dto) {
         String username = dto.getUsername();
         if (userRepository.findByUsername(username).isPresent()) {
             throw new ResourceAlreadyExistsException(

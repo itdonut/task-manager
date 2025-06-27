@@ -1,7 +1,7 @@
 package com.example.task_manager.controllers;
 
 import com.example.task_manager.dtos.request.user.LoginUserDto;
-import com.example.task_manager.dtos.request.user.UserRequestDto;
+import com.example.task_manager.dtos.request.user.RegisterUserDto;
 import com.example.task_manager.dtos.response.user.UserResponseDto;
 import com.example.task_manager.services.IUserService;
 import jakarta.validation.Valid;
@@ -22,8 +22,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody RegisterUserDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(dto));
     }
 
     @PostMapping("/login")

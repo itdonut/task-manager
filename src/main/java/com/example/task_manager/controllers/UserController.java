@@ -28,9 +28,9 @@ public class UserController {
             @NotBlank(message = "User ID is required")
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String id,
-            @Valid @RequestBody UserRequestDto userRequestDto
+            @Valid @RequestBody UserRequestDto dto
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.update(id, userRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(id, dto));
     }
 
     @PutMapping("/{id}/password")

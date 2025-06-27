@@ -1,5 +1,6 @@
 package com.example.task_manager.mappers;
 
+import com.example.task_manager.dtos.request.user.RegisterUserDto;
 import com.example.task_manager.dtos.request.user.UserRequestDto;
 import com.example.task_manager.dtos.response.user.UserResponseDto;
 import com.example.task_manager.entities.User;
@@ -15,6 +16,13 @@ public class UserMapper {
                 .firstname(dto.getFirstname())
                 .lastname(dto.getLastname())
                 .phone(dto.getPhone())
+                .build();
+    }
+
+    public User toEntity(RegisterUserDto dto) {
+        return User.builder()
+                .username(dto.getUsername())
+                .email(dto.getEmail())
                 .build();
     }
 
