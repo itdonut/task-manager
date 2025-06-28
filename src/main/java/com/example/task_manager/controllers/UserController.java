@@ -35,9 +35,11 @@ public class UserController {
             String id,
             @Valid @RequestBody UserRequestDto dto
     ) {
-        log.info("[UserController][{} {}] START update user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] START update user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         UserResponseDto updatedUser = userService.update(id, dto);
-        log.info("[UserController][{} {}] SUCCESS updated user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] SUCCESS updated user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
@@ -49,9 +51,11 @@ public class UserController {
             String id,
             @Valid @RequestBody UpdateUserPasswordDto dto
     ) {
-        log.info("[UserController][{} {}] START update password for user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] START update password for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         userService.updatePassword(id, dto);
-        log.info("[UserController][{} {}] SUCCESS updated password for user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] SUCCESS updated password for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -62,9 +66,11 @@ public class UserController {
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String id
     ) {
-        log.info("[UserController][{} {}] START delete user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] START delete user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         userService.delete(id);
-        log.info("[UserController][{} {}] SUCCESS deleted user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[UserController][{} {}] SUCCESS deleted user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

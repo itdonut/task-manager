@@ -17,11 +17,13 @@ import com.example.task_manager.services.ITeamService;
 import com.example.task_manager.services.IUserService;
 import com.example.task_manager.utils.DateTimeUTC;
 import com.example.task_manager.utils.PasswordUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
@@ -38,24 +40,25 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean isUserPresentById(String id) {
-        return userRepository.existsById(id);
+        boolean exists = userRepository.existsById(id);
+        log.info("[UserService] User with ID: {} exists: {}", id, exists);
+        return exists;
     }
 
     @Override
     public UserResponseDto getUserById(String id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(
-                        "User with id=" + id + " doesn't exist",
-                        DateTimeUTC.now()
-                )
-        );
+        log.info("[UserService] Attempting to fetch user with ID: {}", id);
+        User user = this.getUserEntityById(id);
+        log.info("[UserService] Successfully fetched user with ID: {}", id);
         return userMapper.toDto(user);
     }
 
     @Override
     public UserResponseDto register(RegisterUserDto dto) {
         String username = dto.getUsername();
+        log.info("[UserService] Attempting to register user with username: {}", username);
         if (userRepository.findByUsername(username).isPresent()) {
+            log.warn("[UserService] Registration failed: user with username '{}' already exists", username);
             throw new ResourceAlreadyExistsException(
                     "User with username=" + username + " already exists",
                     DateTimeUTC.now()
@@ -66,11 +69,15 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(PasswordUtil.hashPassword(dto.getPassword()));
         user.setCreatedAt(DateTimeUTC.now());
         user.setModifiedAt(DateTimeUTC.now());
-        return userMapper.toDto(userRepository.save(user));
+
+        User saved = userRepository.save(user);
+        log.info("[UserService] User registered successfully with ID: {}", saved.getId());
+        return userMapper.toDto(saved);
     }
 
     @Override
     public UserResponseDto update(String id, UserRequestDto dto) {
+        log.info("[UserService] Updating user with ID: {}", id);
         User user = this.getUserEntityById(id);
 
         User updatedUser = userMapper.toEntity(dto);
@@ -79,35 +86,39 @@ public class UserServiceImpl implements IUserService {
         updatedUser.setCreatedAt(user.getCreatedAt());
         updatedUser.setModifiedAt(DateTimeUTC.now());
 
-        return userMapper.toDto(userRepository.save(updatedUser));
+        User saved = userRepository.save(updatedUser);
+        log.info("[UserService] User with ID: {} updated successfully", saved.getId());
+        return userMapper.toDto(saved);
     }
 
     @Override
     public void updatePassword(String id, UpdateUserPasswordDto dto) {
+        log.info("[UserService] Attempting to update password for user with ID: {}", id);
         User user = this.getUserEntityById(id);
 
         if (!PasswordUtil.verifyPassword(dto.getOldPassword(), user.getPassword())) {
-            throw new UserPasswordMismatchException(
-                    "Password does not match the one stored",
-                    DateTimeUTC.now()
-            );
+            log.warn("[UserService] Password update failed: password mismatch for user with ID: {}", id);
+            throw new UserPasswordMismatchException("Password does not match the one stored", DateTimeUTC.now());
         }
 
         user.setPassword(PasswordUtil.hashPassword(dto.getNewPassword()));
         user.setModifiedAt(DateTimeUTC.now());
         userRepository.save(user);
+        log.info("[UserService] Password updated successfully for user with ID: {}", id);
     }
 
     @Override
     public void delete(String id) {
+        log.info("[UserService] Attempting to delete user with ID: {}", id);
         assertUserExistsById(id);
 
         if (teamService.getTeamsByUserId(id)
                 .stream()
                 .anyMatch(team -> Objects.equals(team.getOwnerId(), id))
         ) {
+            log.warn("[UserService] Deletion blocked: user with ID: {} is an owner of a team", id);
             throw new ResourceDeletionNotAllowedException(
-                    "User with id=" + id + " cannot be deleted due to ownership of other resources",
+                    "User with ID: " + id + " cannot be deleted due to ownership of other resources",
                     DateTimeUTC.now()
             );
         }
@@ -116,6 +127,7 @@ public class UserServiceImpl implements IUserService {
         taskService.unassignUserById(id);
         teamService.deleteUserFromAllTeamsById(id);
         userRepository.deleteById(id);
+        log.info("[UserService] User with ID {} deleted successfully", id);
     }
 
     @Override
@@ -126,19 +138,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void assertUserExistsById(String id) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException(
-                    "User with id=" + id + " doesn't exist",
-                    DateTimeUTC.now()
-            );
+            log.warn("[UserService] User with ID: {} does not exist", id);
+            throw new ResourceNotFoundException("User with ID: " + id + " doesn't exist", DateTimeUTC.now());
         }
     }
 
     private User getUserEntityById(String id) {
-        return userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(
-                        "User with id=" + id + " doesn't exist",
-                        DateTimeUTC.now()
-                )
-        );
+        return userRepository.findById(id).orElseThrow(() -> {
+            log.warn("[UserService] User with ID: {} not found", id);
+            return new ResourceNotFoundException("User with ID: " + id + " doesn't exist", DateTimeUTC.now());
+        });
     }
 }

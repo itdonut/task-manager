@@ -36,9 +36,11 @@ public class TaskController {
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String id
     ) {
-        log.info("[TaskController][{} {}] START et tasks for user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] START et tasks for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         List<TaskResponseDto> tasks = taskService.getTasksByUserId(id);
-        log.info("[TaskController][{} {}] SUCCESS ound {} tasks for user with ID: {}", request.getMethod(), request.getRequestURI(), tasks.size(), id);
+        log.info("[TaskController][{} {}] SUCCESS ound {} tasks for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), tasks.size(), id);
         return ResponseEntity.status(HttpStatus.OK).body(taskService.getTasksByUserId(id));
     }
 
@@ -50,9 +52,11 @@ public class TaskController {
             String id,
             @Valid @RequestBody TaskRequestDto dto
     ) {
-        log.info("[TaskController][{} {}] START create personal task for user with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] START create personal task for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         TaskResponseDto createdTask = taskService.createUserTask(id, dto);
-        log.info("[TaskController][{} {}] SUCCESS reated personal task with ID: {} for user with ID: {}", request.getMethod(), request.getRequestURI(), createdTask.getId(), id);
+        log.info("[TaskController][{} {}] SUCCESS created personal task with ID: {} for user with ID: {}",
+                request.getMethod(), request.getRequestURI(), createdTask.getId(), id);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
@@ -64,9 +68,11 @@ public class TaskController {
             String id,
             @Valid @RequestBody TaskRequestDto dto
     ) {
-        log.info("[TaskController][{} {}] START create task for team with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] START create task for team with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         TaskResponseDto createdTask = taskService.createTeamTask(id, dto);
-        log.info("[TaskController][{} {}] SUCCESS created task with ID: {} for team with ID: {}", request.getMethod(), request.getRequestURI(), createdTask.getId(), id);
+        log.info("[TaskController][{} {}] SUCCESS created task with ID: {} for team with ID: {}",
+                request.getMethod(), request.getRequestURI(), createdTask.getId(), id);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
@@ -78,9 +84,11 @@ public class TaskController {
             String id,
             @Valid @RequestBody TaskRequestDto dto
     ) {
-        log.info("[TaskController][{} {}] START update task with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] START update task with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         TaskResponseDto updatedTask = taskService.update(id, dto);
-        log.info("[TaskController][{} {}] SUCCESS updated task with ID: {}", request.getMethod(), request.getRequestURI(), updatedTask.getId());
+        log.info("[TaskController][{} {}] SUCCESS updated task with ID: {}",
+                request.getMethod(), request.getRequestURI(), updatedTask.getId());
         return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
     }
 
@@ -92,9 +100,11 @@ public class TaskController {
             String taskId,
             @Valid @RequestBody AssignUserRequestDto dto
     ) {
-        log.info("[TaskController][{} {}] START assign user with ID: {} to task with ID: {}", request.getMethod(), request.getRequestURI(), dto.getUserId(), taskId);
+        log.info("[TaskController][{} {}] START assign user with ID: {} to task with ID: {}",
+                request.getMethod(), request.getRequestURI(), dto.getUserId(), taskId);
         taskService.assignUserById(taskId, dto);
-        log.info("[TaskController][{} {}] SUCCESS assigned user with ID: {} to task with ID: {}", request.getMethod(), request.getRequestURI(), dto.getUserId(), taskId);
+        log.info("[TaskController][{} {}] SUCCESS assigned user with ID: {} to task with ID: {}",
+                request.getMethod(), request.getRequestURI(), dto.getUserId(), taskId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -105,9 +115,11 @@ public class TaskController {
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String id
     ) {
-        log.info("[TaskController][{} {}] START delete personal task with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] START delete personal task with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         taskService.deletePersonalTask(id);
-        log.info("[TaskController][{} {}] SUCCESS deleted personal task with ID: {}", request.getMethod(), request.getRequestURI(), id);
+        log.info("[TaskController][{} {}] SUCCESS deleted personal task with ID: {}",
+                request.getMethod(), request.getRequestURI(), id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -122,9 +134,11 @@ public class TaskController {
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String taskId
     ) {
-        log.info("[TaskController][{} {}] START delete team task with ID: {} from team with ID: {}", request.getMethod(), request.getRequestURI(), taskId, teamId);
+        log.info("[TaskController][{} {}] START delete team task with ID: {} from team with ID: {}",
+                request.getMethod(), request.getRequestURI(), taskId, teamId);
         taskService.deleteTeamTask(teamId, taskId);
-        log.info("[TaskController][{} {}] SUCCESS deleted team task with ID: {} from team with ID: {}", request.getMethod(), request.getRequestURI(), taskId, teamId);
+        log.info("[TaskController][{} {}] SUCCESS deleted team task with ID: {} from team with ID: {}",
+                request.getMethod(), request.getRequestURI(), taskId, teamId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
