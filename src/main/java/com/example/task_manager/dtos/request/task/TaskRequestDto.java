@@ -33,12 +33,12 @@ public class TaskRequestDto {
     private TaskStatus status;
 
     @NotNull(message = "Start date is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
     private Date start;
 
     @NotNull(message = "End date is required")
     @FutureOrPresent(message = "End date must be in the present or future")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
     private Date end;
 
     @AssertTrue(message = "End date must be after or equal to start date")

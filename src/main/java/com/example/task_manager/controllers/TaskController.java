@@ -36,12 +36,12 @@ public class TaskController {
             @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "Invalid MongoDB ID format")
             String id
     ) {
-        log.info("[TaskController][{} {}] START et tasks for user with ID: {}",
+        log.info("[TaskController][{} {}] START get tasks for user with ID: {}",
                 request.getMethod(), request.getRequestURI(), id);
         List<TaskResponseDto> tasks = taskService.getTasksByUserId(id);
-        log.info("[TaskController][{} {}] SUCCESS ound {} tasks for user with ID: {}",
+        log.info("[TaskController][{} {}] SUCCESS found {} tasks for user with ID: {}",
                 request.getMethod(), request.getRequestURI(), tasks.size(), id);
-        return ResponseEntity.status(HttpStatus.OK).body(taskService.getTasksByUserId(id));
+        return ResponseEntity.status(HttpStatus.OK).body(tasks);
     }
 
     @PostMapping("/user/{id}")
